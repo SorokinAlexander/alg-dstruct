@@ -1,0 +1,7 @@
+*.vcxproj*
+*/Debug*
+*/Release*
+*/packages*
+*mainnew.c*
+*.vs*
+*.sln*
