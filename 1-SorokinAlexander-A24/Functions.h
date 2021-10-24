@@ -26,7 +26,7 @@ extern "C" {
 
     void AddNodeAfter(struct worker_t* node, struct worker_t* newNode);
 
-    void AddNodeBefore(struct worker_t* node, struct worker_t* newNode);
+    //void AddNodeBefore(struct worker_t* node, struct worker_t* newNode);
 
     struct worker_t* NodeCreate(char* line);
 

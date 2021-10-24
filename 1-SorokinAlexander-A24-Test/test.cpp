@@ -14,6 +14,7 @@ TEST(ReadFromFile, EmptyFileTest) {
 	char** lines = ReadFromFile(&linesNum, "C:\\repos\\alg-dstruct\\1-SorokinAlexander-A24\\list_empty.txt");
 	EXPECT_EQ(linesNum, 0);
 	EXPECT_TRUE(lines == nullptr);
+	free(lines);
 }
 
 TEST(ReadFromFile, FilledFileTest) {
@@ -32,68 +33,76 @@ TEST(ReadFromFile, FilledFileTest) {
 	fclose(tmp);
 	*/
 	char** lines = ReadFromFile(&linesNum, "C:\\repos\\alg-dstruct\\1-SorokinAlexander-A24\\list.txt");
-
 	EXPECT_EQ(linesNum, 5);
-
 	EXPECT_STREQ(lines[0], line1);
 	EXPECT_STREQ(lines[1], line2);
 	EXPECT_STREQ(lines[2], line3);
 	EXPECT_STREQ(lines[3], line4);
 	EXPECT_STREQ(lines[4], line5);
+	free(lines);
 }
 
 TEST(NodeCreate, EmptyLineTest) {
-	char* line = NULL;
+	char* line = "15.10.2021 Alexander Sorokin 57\n";
+	char* linecopy = (char*)malloc(strlen(line) + 1);
+	ASSERT_NE(linecopy, nullptr);
+	strcpy(linecopy, line);
 	struct worker_t* p = NodeCreate(line);
-	EXPECT_TRUE(p == nullptr);
+	EXPECT_FALSE(p == nullptr);
+	//free(p);
+	free(linecopy);
+	free(p);
 }
 
 TEST(NodeCreate, FilledLineTest) {
 	char* line = "15.10.2021 Alexander Sorokin 57\n";
-	struct worker_t* p = NodeCreate(line);
-
+	char* linecopy = (char*)malloc(strlen(line) + 1);
+	ASSERT_NE(linecopy, nullptr);
+	strcpy(linecopy, line);
+	struct worker_t* p = NodeCreate(linecopy);
 	EXPECT_STREQ(p->date, "15.10.2021");
 	EXPECT_STREQ(p->name, "Alexander");
 	EXPECT_STREQ(p->surname, "Sorokin");
 	EXPECT_EQ(p->workHours, 57);
+	free(linecopy);
+	free(p);
 }
-
+TEST(ListDelete, Delete_list){
+	struct worker_t* pHead = (worker_t*)malloc(sizeof(worker_t));
+	pHead->next = nullptr;
+	FreeList(pHead);
+}
 TEST(AddNodeAfter, AddAfterTest) {
-	char* line1 = "15.10.2021 Alexander Sorokin 57\n";
-	char* line2 = "16.10.2021 Lev Mukhachev 24\n";
-	struct worker_t* pHead = NodeCreate(line1);
-	struct worker_t* pNode = NodeCreate(line2);
-	AddNodeAfter(pHead, pNode);
-	EXPECT_TRUE(pHead->next == pNode);
-	EXPECT_TRUE(pNode->next == NULL);
-	EXPECT_STREQ(pHead->name, "Alexander");
-	EXPECT_STREQ(pNode->name, "Lev");
-}
 
-TEST(AddNodeBefore, AddBeforeTest) {
-	char* line1 = "15.10.2021 Alexander Sorokin 57\n";
-	char* line2 = "16.10.2021 Lev Mukhachev 24\n";
-	struct worker_t* pHead = NodeCreate(line1);
-	struct worker_t* pNode = NodeCreate(line2);
-	AddNodeBefore(pHead, pNode);
-	EXPECT_TRUE(pHead->next == pNode);
-	EXPECT_TRUE(pNode->next == NULL);
-	EXPECT_STREQ(pHead->name, "Lev");
-	EXPECT_STREQ(pNode->name, "Alexander");
+	struct worker_t pHead = { "15.10.2021", "Alexander","Sorokin",57,nullptr };
+	struct worker_t pNode = { "16.10.2021", "Lev","Mukhachev",24,nullptr };
+	AddNodeAfter(&pHead, &pNode);
+	EXPECT_TRUE(pHead.next == &pNode);
+	EXPECT_TRUE(pNode.next == nullptr);
 }
 
 TEST(ListCreate) {
-	int linesNum = 3;
-	char* lines[] = { "15.10.2021 Alexander Sorokin 57\n",
-					"18.10.2021 Pavel Popov 32\n",
-					"11.10.2021 Nikolay Sobolev 32\n" };
+	int linesNum = 2;
+	char* line1 = "15.10.2021 Alexander Sorokin 57\n";
+	char* line2 = "18.10.2021 Pavel Popov 32\n";
+	char* linecopy1 = (char*)malloc(strlen(line1) + 1);
+	char* linecopy2 = (char*)malloc(strlen(line2) + 1);
+	ASSERT_NE(linecopy1, nullptr);
+	ASSERT_NE(linecopy2, nullptr);
+	strcpy(linecopy1, line1);
+	strcpy(linecopy2, line2);
+	char* lines[] = { linecopy1,	linecopy2 };
 	struct worker_t* pHead = ListCreate(linesNum, lines);
-	EXPECT_STREQ(pHead->name, "Nikolay");
+	EXPECT_STREQ(pHead->name, "Alexander");
 	pHead = pHead->next;
 	EXPECT_STREQ(pHead->name, "Pavel");
+	EXPECT_EQ(pHead->next, nullptr);
+	free(linecopy1);
+	free(linecopy2);
+	struct worker_t* tmp = pHead;
 	pHead = pHead->next;
-	EXPECT_STREQ(pHead->name, "Alexander");
-	EXPECT_TRUE(pHead->next == NULL);
+	free(tmp);
+	free(pHead);
 }
 
 TEST(LineOutput, EmptyLineTest) {

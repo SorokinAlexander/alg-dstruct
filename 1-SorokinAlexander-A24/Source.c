@@ -52,12 +52,12 @@ void AddNodeAfter(struct worker_t* node, struct worker_t* newNode) {
     node->next = newNode;
 }
 
-void AddNodeBefore(struct worker_t* node, struct worker_t* newNode) {
-    struct worker_t nodeTemp = *newNode;
-    *newNode = *node;
-    *node = nodeTemp;
-    node->next = newNode;
-}
+//void AddNodeBefore(struct worker_t* node, struct worker_t* newNode) {
+//    struct worker_t nodeTemp = *newNode;
+//    *newNode = *node;
+//    *node = nodeTemp;
+//    node->next = newNode;
+//}
 
 struct worker_t* NodeCreate(char* line) {
     struct worker_t* node = (struct worker_t*)malloc(sizeof(struct worker_t));
@@ -111,17 +111,17 @@ struct worker_t* ListCreate(int linesNum, char** fileLines) {
 
         while (1) {
             if (iterNode->workHours > putNode->workHours) {
-                AddNodeBefore(iterNode, putNode);
+                AddNodeAfter(iterNode, putNode);
                 break;
             }
             else if (iterNode->workHours == putNode->workHours) {
                 if (strcmp(iterNode->name, putNode->name) > 0) {
-                    AddNodeBefore(iterNode, putNode);
+                    AddNodeAfter(iterNode, putNode);
                     break;
                 }
                 else if (strcmp(iterNode->name, putNode->name) == 0) {
                     if (strcmp(iterNode->surname, putNode->surname) > 0) {
-                        AddNodeBefore(iterNode, putNode);
+                        AddNodeAfter(iterNode, putNode);
                         break;
                     }
                 }
@@ -165,5 +165,4 @@ void FreeList(struct worker_t* pHead) {
         node = node->next;
         free(delNode);
     }
-    free(pHead);
 }
