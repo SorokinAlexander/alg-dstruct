@@ -1,5 +1,13 @@
 #define _CRT_SECURE_NO_WARNINGS
+#include <stdlib.h>
 #include <stdio.h>
+#include <limits.h>
+
+#define START 1
+#define ERROR1 -1
+#define ERROR2 -2
+
+
 
 const char nl = '\n';
 int  U, B, K;
@@ -22,6 +30,7 @@ int Read(const char* file_name) {
 
     prices = (int*)malloc(sizeof(int) * U);
     if (prices == NULL) {
+        free(weights);
         printf("No memory allocated!");
         return 0;
     }
@@ -37,7 +46,7 @@ int Read(const char* file_name) {
 
 int Min(int* a) {
     int id = -1;
-    int min = 1000000;
+    int min = UINT_MAX;
     for (int i = 0; i < U; i++)
         if (a[i] < min && a[i] != 0) {
             id = i;
@@ -47,9 +56,12 @@ int Min(int* a) {
 }
 
 int Sum(int  U, int B, int K) {
+    if (!weights) {
+        return 0;
+    }
     all_sum = 0;
     all_weight = 0;
-    int min_weight = 100000;
+    int min_weight = UINT_MAX;
 
     for (int i = 0; i < U; i++) {
         all_sum += prices[i];
@@ -79,9 +91,9 @@ int Sum(int  U, int B, int K) {
 
     int cur_weight = all_weight;
     int cur_sum = all_sum;
-    int flag = 1;
+    int flag = START;
 
-    while (flag != -1 && flag != -2) {
+    while (flag != ERROR1 && flag != ERROR2) {
         int min_price = Min(prices);
         cur_weight -= weights[min_price];
         cur_sum -= prices[min_price];
@@ -89,9 +101,9 @@ int Sum(int  U, int B, int K) {
         prices[min_price] = 0;
 
         if (cur_weight - B <= 0) {
-            flag = -2;
+            flag = ERROR2;
             if (cur_sum >= K) {
-                flag = -1;
+                flag = ERROR1;
             }
         }
     }
@@ -103,6 +115,8 @@ int Sum(int  U, int B, int K) {
             if (weights[i] > 0)
                 fprintf(values, "%d ", i + 1);
         }
+        free(weights);
+        free(prices);
         fclose(values);
         return 0;
     }
@@ -112,10 +126,12 @@ int Sum(int  U, int B, int K) {
         fprintf(values, "%d ", 0);
         fclose(values);
     }
+    free(weights);
+    free(prices);
     return 1;
 }
 
 int main() {
     Read("input.txt");
     Sum(U, B, K);
-}
+} 
