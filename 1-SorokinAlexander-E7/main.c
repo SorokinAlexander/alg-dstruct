@@ -11,4 +11,5 @@ int main() {
     TreeInsert(tree, 12);
     PrintTree(tree, 0);
     PrintTreeNodes(tree);
+    FreeTree(tree);
 }
